@@ -1,0 +1,41 @@
+version: '3'
+services:
+  app:
+    build: .
+    container_name: go_app
+    volumes:
+      - ./go:/go
+    ports:
+      - 1323:1323
+    depends_on:
+      - db
+    tty: true
+    command: "sh -c /bin/sh"
+  db:
+    image: postgres:10.5
+    container_name: postgresql
+    ports:
+      - 55432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    hostname: postgres
+    restart: always
+    user: root
+  
+  pgadmin4:
+    image: dpage/pgadmin4:3.3
+    container_name: pgadmin4
+    ports:
+      - 50080:80
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin/storage
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root
+      PGADMIN_DEFAULT_PASSWORD: root
+    hostname: pgadmin4
+    restart: always
